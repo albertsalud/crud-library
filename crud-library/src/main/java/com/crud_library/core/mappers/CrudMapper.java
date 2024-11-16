@@ -1,8 +1,8 @@
-package com.crud_library.core;
+package com.crud_library.core.mappers;
 
 import java.util.List;
 
-public interface AbstractCrudMapper<E, B> {
+public interface CrudMapper<E, B> {
 	
 	E mapToEntity(B bean);
 	B mapToBean(E entity);
