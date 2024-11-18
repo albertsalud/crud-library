@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.crud_library.core.exceptions.CrudError;
 import com.crud_library.core.exceptions.CrudException;
@@ -22,10 +23,11 @@ import com.crud_library.core.services.CrudService;
 
 import jakarta.validation.Valid;
 
+@RestController
 public abstract class CrudController<E, B, I> {
 	
-	private final CrudService<E, I> service;
-	private final CrudMapper<E, B> mapper;
+	protected final CrudService<E, I> service;
+	protected final CrudMapper<E, B> mapper;
 	
 	protected CrudController (CrudService<E, I> service,
 			CrudMapper<E, B> mapper) {

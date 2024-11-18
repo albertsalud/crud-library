@@ -1,9 +1,13 @@
 package com.crud_library.core.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.MethodNotAllowedException;
@@ -34,7 +38,7 @@ public class CrudControllerAdvice {
 	}
 	
 	@ExceptionHandler(MethodNotAllowedException.class)
-	public ResponseEntity<CrudErrorResponse> manageCrudException(MethodNotAllowedException exception) {
+	public ResponseEntity<CrudErrorResponse> manageMethodNotAllowedException(MethodNotAllowedException exception) {
 		return ResponseEntity
 				.status(exception.getStatusCode())
 				.body(
@@ -42,5 +46,26 @@ public class CrudControllerAdvice {
 						.message(exception.getMessage())
 						.build()
 						);
+	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<CrudErrorResponse> manageMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+		
+		return ResponseEntity
+				.status(exception.getStatusCode())
+				.body(
+					CrudErrorResponse.builder()
+						.message(getDefaultMessages(exception.getFieldErrors()))
+						.build()
+						);
+	}
+
+	private String getDefaultMessages(List<FieldError> fieldErrors) {
+		StringBuilder sb = new StringBuilder();
+		fieldErrors.forEach(fe -> {
+			sb.append(fe.getField() + ": " + fe.getDefaultMessage() + " - ");
+		});
+		sb.append("END");
+		return sb.toString();
 	}
 }

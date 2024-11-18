@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.crud_library.core.exceptions.CrudError;
 import com.crud_library.core.exceptions.CrudException;
@@ -18,9 +19,10 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Service
 public abstract class CrudService<E, I> {
 	
-	private final CrudRepository<E, I> repository;
+	protected final CrudRepository<E, I> repository;
 	
 	protected CrudService(CrudRepository<E, I> repository) {
 		this.repository = repository;
