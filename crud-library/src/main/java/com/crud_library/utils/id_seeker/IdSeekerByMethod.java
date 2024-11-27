@@ -33,7 +33,7 @@ public class IdSeekerByMethod extends IdSeeker {
 		for(Method currentMethod: entity.getClass().getDeclaredMethods()) {
 			for(Annotation currentAnnotation : currentMethod.getDeclaredAnnotations()) {
 				log.info("annotation for method {}: {}", currentMethod.getName(), currentAnnotation);
-				if(currentAnnotation.toString().contains(".Id(")) {
+				if(currentAnnotation.toString().contains("Id")) {
 					return currentMethod;
 				}
 				

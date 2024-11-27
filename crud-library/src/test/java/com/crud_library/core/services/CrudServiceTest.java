@@ -26,10 +26,8 @@ import org.springframework.data.domain.Pageable;
 
 import com.crud_library.core.exceptions.CrudError;
 import com.crud_library.core.exceptions.CrudException;
-import com.crud_library.core.filters.CrudFilter;
 import com.crud_library.core.repositories.CrudRepository;
 import com.crud_library.samples.TestEntity;
-import com.querydsl.core.types.Predicate;
 
 @ExtendWith(MockitoExtension.class)
 public class CrudServiceTest {
@@ -95,18 +93,18 @@ public class CrudServiceTest {
 	
 	@Test
 	public void findByFilter() {
-		when(repository.findAll(any(Predicate.class))).thenReturn(Collections.emptyList());
+		when(repository.findAll()).thenReturn(Collections.emptyList());
 		
-		service.findByFilter(new CrudFilter() {});
-		verify(repository).findAll(any(Predicate.class));
+		service.findAll();
+		verify(repository).findAll();
 	}
 	
 	@Test
 	public void findByFilter_whenFilterIsNull_returnsList() {
-		when(repository.findAll(any(Predicate.class))).thenReturn(Collections.emptyList());
+		when(repository.findAll()).thenReturn(Collections.emptyList());
 		
-		service.findByFilter(null);
-		verify(repository).findAll(any(Predicate.class));
+		service.findAll(null);
+		verify(repository).findAll();
 	}
 	
 	@Test
@@ -217,17 +215,17 @@ public class CrudServiceTest {
 	@Test
 	public void findByFilterPageable() {
 		Pageable pageable = PageRequest.of(0, 5);
-		service.findByFilter(pageable, new CrudFilter() {});
+		service.findAll(pageable);
 		
-		verify(repository).findAll(any(Predicate.class), eq(pageable));
+		verify(repository).findAll(eq(pageable));
 	}
 	
 	@Test
 	public void findByFilterPageable_whenNullFilter_returnsResult() {
 		Pageable pageable = PageRequest.of(0, 5);
-		service.findByFilter(pageable, null);
+		service.findAll(pageable);
 		
-		verify(repository).findAll(any(Predicate.class), eq(pageable));
+		verify(repository).findAll(eq(pageable));
 	}
 	
 

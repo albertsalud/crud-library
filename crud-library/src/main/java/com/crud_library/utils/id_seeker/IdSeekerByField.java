@@ -34,7 +34,7 @@ public class IdSeekerByField extends IdSeeker {
 	private Field getIdField(Object entity) {
 		for(Field currentField: entity.getClass().getDeclaredFields()) {
 			for(Annotation currentAnnotation : currentField.getDeclaredAnnotations()) {
-				if(currentAnnotation.toString().contains(".Id(")) {
+				if(currentAnnotation.toString().contains("Id")) {
 					return currentField;
 				}
 				

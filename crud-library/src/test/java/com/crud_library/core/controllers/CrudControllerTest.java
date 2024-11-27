@@ -28,7 +28,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.crud_library.core.exceptions.CrudError;
 import com.crud_library.core.exceptions.CrudException;
-import com.crud_library.core.filters.CrudFilter;
 import com.crud_library.core.mappers.CrudMapper;
 import com.crud_library.core.services.CrudService;
 import com.crud_library.samples.TestBean;
@@ -83,13 +82,13 @@ public class CrudControllerTest {
 	public void create() {
 		TestBean testBean = createTestBean(null);
 		TestEntity testEntity = createTestEntity(null);
-		when(mapper.mapToEntity(any())).thenReturn(testEntity);
+		when(mapper.mapToDomain(any())).thenReturn(testEntity);
 		when(mapper.mapToBean(any())).thenReturn(testBean);
 		when(service.create(any())).thenReturn(testEntity);
 		
 		controller.create(testBean);
 		verify(mapper).mapToBean(eq(testEntity));
-		verify(mapper).mapToEntity(eq(testBean));
+		verify(mapper).mapToDomain(eq(testBean));
 		verify(service).create(eq(testEntity));
 	}
 	
@@ -97,12 +96,12 @@ public class CrudControllerTest {
 	public void update() {
 		TestBean testBean = createTestBean(null);
 		TestEntity testEntity = createTestEntity(null);
-		when(mapper.mapToEntity(any())).thenReturn(testEntity);
+		when(mapper.mapToDomain(any())).thenReturn(testEntity);
 		when(service.update(any())).thenReturn(testEntity);
 		
 		controller.update(testBean);
 		verify(mapper).mapToBean(eq(testEntity));
-		verify(mapper).mapToEntity(eq(testBean));
+		verify(mapper).mapToDomain(eq(testBean));
 		verify(service).update(eq(testEntity));
 	}
 	
@@ -118,29 +117,27 @@ public class CrudControllerTest {
 	}
 	
 	@Test
-	public void findByFilter() {
-		CrudFilter filter = new CrudFilter() {};
+	public void findAll() {
 		
-		when(service.findByFilter(any())).thenReturn(Collections.singletonList(createTestEntity(null)));
-		controller.findByFilter(filter);
+		when(service.findAll()).thenReturn(Collections.singletonList(createTestEntity(null)));
+		controller.findAll();
 		
-		verify(service).findByFilter(eq(filter));
-		verify(mapper).mapToBeans(anyList());
+		verify(service).findAll();
+		verify(mapper).mapToBeanList(anyList());
 	}
 	
 	@Test
-	public void findByFilterPage()  {
+	public void findAllPage()  {
 		Pageable pageable = PageRequest.of(1, 10);
-		CrudFilter filter = new CrudFilter() {};
 		Page<TestEntity> page = new PageImpl<TestEntity>(Collections.emptyList(), pageable, 0);
 		
-		when(service.findByFilter(any(Pageable.class), any(CrudFilter.class))).thenReturn(page);
-		Page<TestBean> response = controller.findByFilter(pageable, filter);
+		when(service.findAll(any(Pageable.class))).thenReturn(page);
+		Page<TestBean> response = controller.findAll(pageable);
 		
 		assertNotNull(response);
 		assertEquals(page.getTotalElements(), response.getTotalElements());
-		verify(service).findByFilter(eq(pageable), eq(filter));
-		verify(mapper).mapToBeans(eq(page.getContent()));
+		verify(service).findAll(eq(pageable));
+		verify(mapper).mapToBeanList(eq(page.getContent()));
 	}
 	
 

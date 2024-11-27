@@ -1,10 +1,16 @@
 package com.crud_library.core.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import org.springframework.data.repository.NoRepositoryBean;
+import java.util.Optional;
 
-@NoRepositoryBean
-public interface CrudRepository<E, I> extends JpaRepository<E, I>, QuerydslPredicateExecutor<E>{
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+public interface CrudRepository<D, I> {
+	
+	Optional<D> findById(I id);
+	Iterable<D> findAll();
+	D save(D entity);
+	void delete(D domain);
+	Page<D> findAll(Pageable pageable);
 
 }

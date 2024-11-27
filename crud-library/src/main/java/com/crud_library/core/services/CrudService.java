@@ -5,11 +5,9 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import com.crud_library.core.exceptions.CrudError;
 import com.crud_library.core.exceptions.CrudException;
-import com.crud_library.core.filters.CrudFilter;
 import com.crud_library.core.repositories.CrudRepository;
 import com.crud_library.utils.id_seeker.IdSeeker;
 import com.crud_library.utils.id_seeker.IdSeekerByField;
@@ -19,16 +17,15 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
-public abstract class CrudService<E, I> {
+public abstract class CrudService<D, I> {
 	
-	protected final CrudRepository<E, I> repository;
+	protected final CrudRepository<D, I> repository;
 	
-	protected CrudService(CrudRepository<E, I> repository) {
+	protected CrudService(CrudRepository<D, I> repository) {
 		this.repository = repository;
 	}
 	
-	public Optional<E> findById(I id) {
+	public Optional<D> findById(I id) {
 		if(id == null) {
 			log.error("Trying to find entity with null parameter");
 			throw new CrudException(CrudError.INVALID_PARAMS);
@@ -37,51 +34,48 @@ public abstract class CrudService<E, I> {
 		return repository.findById(id);
 	}
 	
-	public List<E> findByFilter(CrudFilter filter) {
-		if(filter == null) filter = new CrudFilter() {};
-		
-		return (List<E>) this.repository.findAll(filter.getBuilder());
+	public List<D> findAll() {
+		return (List<D>) this.repository.findAll();
 	}
 	
-	public E create(E entity) {
-		if(entity == null) {
+	public D create(D domain) {
+		if(domain == null) {
 			log.error("Trying to create null object");
 			throw new CrudException(CrudError.INVALID_PARAMS);
 		}
-		return this.repository.save(entity);
+		return this.repository.save(domain);
 	}
 	
 	@Transactional
-	public E update(E entity) {
-		if(entity == null) {
+	public D update(D domain) {
+		if(domain == null) {
 			log.error("Trying to update null object");
 			throw new CrudException(CrudError.INVALID_PARAMS);
 		}
 		
-		Object id = getEntityId(entity);
+		Object id = getEntityId(domain);
 		this.findById((I) id).orElseThrow(() -> new CrudException(CrudError.ENTITY_NOT_FOUND, id));
 		
-		return this.repository.save(entity);
+		return this.repository.save(domain);
 	}
 	
-	private Object getEntityId(E entity) {
+	private Object getEntityId(D domain) {
 		IdSeeker idSeeker = IdSeeker.set(new IdSeekerByField(), new IdSeekerByMethod());
 			
-		return idSeeker.getId(entity);
+		return idSeeker.getId(domain);
 	}
 
-	public E delete(I id) {
-		E entityToReturn = this.findById(id).orElseThrow(() -> new CrudException(CrudError.ENTITY_NOT_FOUND, id));
-		this.repository.delete(entityToReturn);
+	public D delete(I id) {
+		D domainToReturn = this.findById(id).orElseThrow(() -> new CrudException(CrudError.ENTITY_NOT_FOUND, id));
+		this.repository.delete(domainToReturn);
 		
-		return entityToReturn;
+		return domainToReturn;
 		
 	}
 
-	public Page<E> findByFilter(Pageable pageable, CrudFilter filter) {
-		if(filter == null) filter = new CrudFilter() {};
+	public Page<D> findAll(Pageable pageable) {
 		
-		return this.repository.findAll(filter.getBuilder(), pageable);
+		return this.repository.findAll(pageable);
 	}
 
 }

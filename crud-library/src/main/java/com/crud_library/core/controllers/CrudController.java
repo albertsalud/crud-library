@@ -17,20 +17,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.crud_library.core.exceptions.CrudError;
 import com.crud_library.core.exceptions.CrudException;
-import com.crud_library.core.filters.CrudFilter;
 import com.crud_library.core.mappers.CrudMapper;
 import com.crud_library.core.services.CrudService;
 
 import jakarta.validation.Valid;
 
 @RestController
-public abstract class CrudController<E, B, I> {
+public abstract class CrudController<D, B, I> {
 	
-	protected final CrudService<E, I> service;
-	protected final CrudMapper<E, B> mapper;
+	protected final CrudService<D, I> service;
+	protected final CrudMapper<D, B> mapper;
 	
-	protected CrudController (CrudService<E, I> service,
-			CrudMapper<E, B> mapper) {
+	protected CrudController (CrudService<D, I> service,
+			CrudMapper<D, B> mapper) {
 		this.service = service;
 		this.mapper = mapper;
 	}
@@ -46,14 +45,14 @@ public abstract class CrudController<E, B, I> {
 	public B create(@Valid @RequestBody B bean) {
 		return mapper.mapToBean(
 				service.create(
-						mapper.mapToEntity(bean))
+						mapper.mapToDomain(bean))
 				);
 	}
 	
 	@PutMapping
 	public B update(@Valid @RequestBody B bean) {
 		return mapper.mapToBean(
-				service.update(mapper.mapToEntity(bean))
+				service.update(mapper.mapToDomain(bean))
 				);
 	}
 	
@@ -65,17 +64,17 @@ public abstract class CrudController<E, B, I> {
 	
 	
 	@GetMapping
-	public List<B> findByFilter(CrudFilter filter) {
-		return this.mapper.mapToBeans(
-				service.findByFilter(filter)
+	public List<B> findAll() {
+		return this.mapper.mapToBeanList(
+				service.findAll()
 				);
 	}
 	
 	@GetMapping("/paginated")
-	public Page<B> findByFilter(Pageable pageable, CrudFilter filter) {
-		Page<E> serviceResponse = service.findByFilter(pageable, filter);
+	public Page<B> findAll(Pageable pageable) {
+		Page<D> serviceResponse = service.findAll(pageable);
 		
-		return new PageImpl<B>(mapper.mapToBeans(serviceResponse.getContent()), pageable, serviceResponse.getTotalElements());
+		return new PageImpl<B>(mapper.mapToBeanList(serviceResponse.getContent()), pageable, serviceResponse.getTotalElements());
 	}
 
 }

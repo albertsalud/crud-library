@@ -9,7 +9,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 public class CrudConfig {
 	
 	@Bean
-	public MessageSource crudMessageSource() {
+	MessageSource crudMessageSource() {
 		ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
 		
 		ms.setBasename("crudMessages");
